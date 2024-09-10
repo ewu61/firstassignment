@@ -1,9 +1,11 @@
 import SwiftUI
+import FirebaseAuth
 import FirebaseFirestore
 
 struct MainContentView: View {
-    @State private var messages: [Message] = []  // Store fetched messages
-    @State private var showSendMessageView = false  // To show the Send Message screen
+    @State private var messages: [Message] = []
+    @State private var showSendMessageView = false
+    @Binding var isUserLoggedIn: Bool  // Binding to manage login state
 
     let db = Firestore.firestore()
 
@@ -34,21 +36,26 @@ struct MainContentView: View {
                 }
                 .padding()
                 .sheet(isPresented: $showSendMessageView) {
-                    SendMessageView()  // Navigates to the SendMessageView
+                    SendMessageView()
                 }
             }
             .padding()
             .navigationTitle("Messages")
+            .navigationBarItems(trailing: Button(action: {
+                logoutUser()  // Call logout function
+            }) {
+                Text("Logout")
+                    .foregroundColor(.red)
+            })
         }
     }
 
-    // Fetch messages from Firestore
+    // Function to fetch messages from Firestore
     func fetchMessages() {
         db.collection("messages").order(by: "timestamp", descending: false).addSnapshotListener { querySnapshot, error in
             if let error = error {
                 print("Error fetching messages: \(error)")
             } else {
-                // Map the snapshot data into Message model
                 self.messages = querySnapshot?.documents.compactMap { document -> Message? in
                     let data = document.data()
                     guard let name = data["name"] as? String,
@@ -59,6 +66,16 @@ struct MainContentView: View {
                     return Message(id: document.documentID, name: name, text: text, timestamp: timestamp.dateValue())
                 } ?? []
             }
+        }
+    }
+
+    // Function to log out the user
+    func logoutUser() {
+        do {
+            try Auth.auth().signOut()
+            isUserLoggedIn = false  // Reset login state
+        } catch let signOutError as NSError {
+            print("Error signing out: \(signOutError.localizedDescription)")
         }
     }
 }
@@ -73,6 +90,6 @@ struct Message: Identifiable {
 
 struct MainContentView_Previews: PreviewProvider {
     static var previews: some View {
-        MainContentView()
+        MainContentView(isUserLoggedIn: .constant(true))
     }
 }
