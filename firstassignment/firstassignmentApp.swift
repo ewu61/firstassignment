@@ -6,13 +6,20 @@
 //
 
 import SwiftUI
+import FirebaseCore
 import SwiftData
 
 @main
 struct firstassignmentApp: App {
+    // Initialize Firebase in the init method
+    init() {
+        FirebaseApp.configure()
+    }
+
+    // SwiftData model container setup
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            Item.self,  // Add any models if needed, currently you have `Item` class
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -25,8 +32,8 @@ struct firstassignmentApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView()  // Main content view
         }
-        .modelContainer(sharedModelContainer)
+        .modelContainer(sharedModelContainer)  // Attaching the model container for SwiftData
     }
 }
