@@ -1,77 +1,76 @@
 import SwiftUI
 import FirebaseFirestore
 
-struct ContentView: View {
+struct SendMessageView: View {
     @State private var name: String = ""
-    @State private var message: String = ""
-    @State private var responseMessage: String = ""
+    @State private var messageText: String = ""
+    @State private var sendMessageError: String = ""
 
-    // Reference to Firestore
     let db = Firestore.firestore()
 
     var body: some View {
         VStack {
-            Text("Send Message")
-                .font(.headline)
+            Text("Send a Message")
+                .font(.largeTitle)
                 .padding()
 
-            TextField("Enter your name", text: $name)
+            TextField("Your Name", text: $name)
                 .padding()
                 .textFieldStyle(RoundedBorderTextFieldStyle())
 
-            TextField("Enter your message", text: $message)
+            TextField("Your Message", text: $messageText)
                 .padding()
                 .textFieldStyle(RoundedBorderTextFieldStyle())
 
             Button(action: {
-                sendDataToFirebase()
+                sendMessage()
             }) {
                 Text("Send")
+                    .font(.headline)
                     .padding()
-                    .background(Color.blue)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.green)
                     .foregroundColor(.white)
-                    .cornerRadius(8)
+                    .cornerRadius(10)
             }
+            .padding()
 
-            Text(responseMessage)
-                .padding()
-                .multilineTextAlignment(.center)
+            if !sendMessageError.isEmpty {
+                Text(sendMessageError)
+                    .foregroundColor(.red)
+                    .padding()
+            }
         }
         .padding()
     }
 
-    // Function to send data to Firestore
-    func sendDataToFirebase() {
-        // Create a timestamp for the message
-        let timestamp = Date().timeIntervalSince1970
-        
-        // Create the data dictionary to send
+    // Function to send the message to Firestore
+    func sendMessage() {
+        let timestamp = Date()
+
+        // Create a dictionary with the message details
         let data: [String: Any] = [
             "name": name,
-            "message": message,
-            "timestamp": timestamp
+            "message": messageText,
+            "timestamp": Timestamp(date: timestamp)
         ]
 
-        // Add the data to Firestore under the "messages" collection
+        // Add the message to Firestore
         db.collection("messages").addDocument(data: data) { error in
             if let error = error {
-                // If there was an error, update the UI with the error message
-                DispatchQueue.main.async {
-                    responseMessage = "Error: \(error.localizedDescription)"
-                }
+                sendMessageError = "Error sending message: \(error.localizedDescription)"
             } else {
-                // On success, clear the message and update the UI
-                DispatchQueue.main.async {
-                    responseMessage = "Message successfully sent!"
-                    message = "" // Clear the message after sending
-                }
+                // Reset the fields after successful message send
+                name = ""
+                messageText = ""
+                sendMessageError = "Message sent successfully!"
             }
         }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct SendMessageView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        SendMessageView()
     }
 }

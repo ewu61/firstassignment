@@ -157,10 +157,10 @@
 				4EF569202C8E941100416DD4 /* Item.swift */,
 				4EF569222C8E941300416DD4 /* Assets.xcassets */,
 				4E4748502C8FE2AE002E0BD9 /* GoogleService-Info.plist */,
-				4EF569242C8E941300416DD4 /* Preview Content */,
 				4E4748532C8FE64C002E0BD9 /* LoginView.swift */,
 				4E4748552C8FE66E002E0BD9 /* RegistrationView.swift */,
 				4E4748572C8FE9F6002E0BD9 /* MainContentView.swift */,
+				4EF569242C8E941300416DD4 /* Preview Content */,
 			);
 			path = firstassignment;
 			sourceTree = "<group>";
