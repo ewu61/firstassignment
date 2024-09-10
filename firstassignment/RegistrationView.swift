@@ -42,6 +42,8 @@ struct RegistrationView: View {
             }
         }
         .padding()
+        .navigationTitle("Create Account")  // Title for the sign-up screen
+        .navigationBarBackButtonHidden(false)  // Ensures the back button is shown
     }
 
     func registerUser() {
