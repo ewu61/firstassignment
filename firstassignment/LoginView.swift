@@ -1,5 +1,5 @@
-import SwiftUI
 import FirebaseAuth
+import SwiftUI
 
 struct LoginView: View {
     @State private var email: String = ""
@@ -14,28 +14,43 @@ struct LoginView: View {
             VStack {
                 Text("Login")
                     .font(.largeTitle)
-                    .padding()
+                    .padding(.vertical)
+                // email field
+                HStack {
+                    Image(systemName: "person")
+                        .foregroundColor(.gray)
+                        .padding()
+                    TextField("Please enter email", text: $email)
+                        .keyboardType(.namePhonePad)
+                }
+                .overlay(RoundedRectangle(cornerRadius: 15)
+                    .stroke(Color.gray, lineWidth: 1))
+                .padding(.horizontal)
+                .foregroundColor(.gray)
+                // password field
+                HStack {
+                    Image(systemName: "lock")
+                        .foregroundColor(.gray)
+                        .padding()
+                    SecureField("Please enter password", text: $password)
+                        .keyboardType(.namePhonePad)
+                }
+                .overlay(RoundedRectangle(cornerRadius: 15)
+                    .stroke(Color.gray, lineWidth: 1))
+                .padding(.horizontal)
+                .foregroundColor(.gray)
 
-                TextField("Email", text: $email)
-                    .keyboardType(.emailAddress)
-                    .autocapitalization(.none)
-                    .padding()
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-
-                SecureField("Password", text: $password)
-                    .padding()
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-
+                // login button
                 Button(action: {
                     loginUser()
                 }) {
                     Text("Login")
                         .font(.headline)
+                        .foregroundColor(.white)
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                        .background(Color.black)
+                        .cornerRadius(35)
                 }
                 .padding()
 
@@ -52,19 +67,20 @@ struct LoginView: View {
                 .padding()
             }
             .padding()
-            .navigationTitle("Login")
+            .navigationTitle("Login Page") // page title
         }
     }
 
     func loginUser() {
-        Auth.auth().signIn(withEmail: email, password: password) { result, error in
+        // Invoke the firebase login method
+        Auth.auth().signIn(withEmail: email, password: password) { _, error in
             if let error = error {
                 loginMessage = "Error: \(error.localizedDescription)"
             } else {
                 loginMessage = "Logged in successfully!"
                 // Switch to main content after successful login
                 DispatchQueue.main.async {
-                    isUserLoggedIn = true  // Update the binding to log the user in
+                    isUserLoggedIn = true // Update the binding to log the user in
                 }
             }
         }
